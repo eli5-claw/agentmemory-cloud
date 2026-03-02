@@ -104,7 +104,7 @@ Content-Type: application/json
 }
 ```
 
-#### Query Memories
+#### Query Memories (Vector Search)
 ```http
 POST /api/v1/memory/query
 Content-Type: application/json
@@ -114,6 +114,23 @@ Content-Type: application/json
   "query": "What does the user prefer?",
   "top_k": 5
 }
+```
+
+#### List Memories
+```http
+POST /api/v1/memory/query
+Content-Type: application/json
+
+{
+  "agent_id": "agent_123",
+  "list_only": true,
+  "limit": 20
+}
+```
+
+#### Get Memory
+```http
+GET /api/v1/memory/{id}
 ```
 
 #### Update Memory
@@ -132,6 +149,60 @@ Content-Type: application/json
 DELETE /api/v1/memory/{id}
 ```
 
+### Agent Management
+
+#### List Agents
+```http
+GET /api/v1/agents
+```
+
+#### Create Agent
+```http
+POST /api/v1/agents
+Content-Type: application/json
+
+{
+  "name": "My Agent",
+  "description": "Description of the agent"
+}
+```
+
+### Context Management
+
+#### Get Context
+```http
+GET /api/v1/context?agent_id={agent_id}&session_id={session_id}
+```
+
+#### Update Context
+```http
+POST /api/v1/context
+Content-Type: application/json
+
+{
+  "agent_id": "agent_123",
+  "session_id": "session_456",
+  "context_data": {
+    "key": "value"
+  }
+}
+```
+
+#### Add Working Memory
+```http
+POST /api/v1/context
+Content-Type: application/json
+
+{
+  "agent_id": "agent_123",
+  "session_id": "session_456",
+  "working_memory": {
+    "content": "Important context",
+    "importance": 8
+  }
+}
+```
+
 ## Project Structure
 
 ```
@@ -147,10 +218,53 @@ agentmemory-cloud/
 │   │   ├── db.ts       # Database client
 │   │   ├── pinecone.ts # Vector store
 │   │   ├── redis.ts    # Cache client
-│   │   └── ...
+│   │   ├── memory.ts   # Memory operations
+│   │   ├── context.ts  # Context management
+│   │   └── auth.ts     # Authentication
 │   └── types/          # TypeScript types
 ├── docker-compose.yml  # Local development
 └── README.md
+```
+
+## Memory Types
+
+- **Episodic**: Event-based memories (conversations, interactions)
+- **Semantic**: Factual knowledge (preferences, facts)
+- **Procedural**: How-to knowledge (workflows, processes)
+- **Working**: Temporary context for current session
+
+## Development
+
+```bash
+# Run dev server
+npm run dev
+
+# Build for production
+npm run build
+
+# Run linting
+npm run lint
+
+# Database commands
+npm run db:generate   # Generate Prisma client
+npm run db:migrate    # Run migrations
+npm run db:push       # Push schema changes
+npm run db:studio     # Open Prisma Studio
+```
+
+## Deployment
+
+### Vercel (Recommended)
+
+1. Push your code to GitHub
+2. Import project in Vercel
+3. Add environment variables
+4. Deploy
+
+### Docker
+
+```bash
+docker-compose up -d
 ```
 
 ## License
